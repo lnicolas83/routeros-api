@@ -384,3 +384,11 @@ class Api:
             return False
         return self.remove(path, [i["id"] for i in resp1])
     
+    def run(self, script_name):
+        """
+        run a script (mikrotik's /system/script/run)
+        
+        script_name: name of script
+        """
+        ret, resp = self.send(["/system/script/run","=.id={}".format(script_name)])
+        return ret
