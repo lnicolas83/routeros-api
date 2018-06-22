@@ -1,5 +1,5 @@
 # routeros-api
-Mikrotik routerOS api in python
+Mikrotik routerOS api in python (based on the code of the mikrotik's wiki, https://wiki.mikrotik.com/wiki/Manual:API_Python3)
 
 Examples :
 
@@ -17,6 +17,9 @@ True
 
 >>> api.find("/ip/address",{"interface":"ether1"}, itemlist="address,interface")
 (True, [{'address': '192.168.98.2/30', 'interface': 'ether1'}])
+
+>>> api.add('/ip/address',{"address": "192.168.0.1/24", "interface":"ether4"})
+True
 
 >>> api.find_and_set("/ip/address",{"interface":"ether2"},{"address":"129.0.0.0/32"})
 True
