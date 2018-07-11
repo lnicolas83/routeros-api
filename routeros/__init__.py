@@ -15,12 +15,17 @@ class Api:
             ws = s
         ws.connect((host,port))
         self.connection = ws
-        self.currenttag = 0
+        self._currenttag = 0
         self.debug = debug
         self._logged = False
+
+    def _debugmsg(self, *msg):
+        if self.debug:
+            print(" ".join(msg))
  
-    def _talk(self, words):
-        if self._writeSentence(words) == 0: return
+    def _talk(self, words, only_read=False):
+        if not only_read:
+            if self._writeSentence(words) == 0: return
         r = []
         while 1:
             i = self._readSentence();
@@ -52,15 +57,13 @@ class Api:
             r.append(w)
             
     def _writeWord(self, w):
-        if self.debug:
-            print(("<<< " + w))
+        self._debugmsg("<<< " + w)
         self._writeLen(len(w))
         self._writeStr(w)
 
     def _readWord(self):
         ret = self._readStr(self._readLen())
-        if self.debug:
-            print((">>> " + ret))
+        self._debugmsg(">>> " + ret)
         return ret
 
     def _writeLen(self, l):
@@ -198,19 +201,63 @@ class Api:
         
         err,msg = send(["line1","line2",...])
         """
+        cancel_tag = []
         if self.connection.fileno() < 0 or not self._logged:
             return False,[]
+        req_tag = self._currenttag
+        words.append(".tag="+str(req_tag))
+        self._currenttag += 1
         rep = self._talk(words)
-        if rep[0][0] == "!done":
-            return True,[]
-        if rep[0][0] == "!trap":
-            return False,{ k.replace('=', ''): v for k, v in rep[0][1].items() }
         fullrep = []
-        for line in rep:
-            if line[0] == "!re":
-                fullrep.append({ k[1:] if k.startswith('=') else k: v for k, v in line[1].items() })
-        if self.debug:
-            print("send result : ",fullrep)
+        tag_resp = False
+        while not tag_resp:
+            if rep[0][0] == "!trap":
+                tagstr = rep[0][1].get(".tag")
+                try:
+                    tag = int(tagstr)
+                except:
+                    tag = -1
+                self._debugmsg("send done reqtag:{} reptag:{}".format(req_tag,tag))
+                if tag == req_tag:
+                    return False,{ k.replace('=', ''): v for k, v in rep[0][1].items() }
+                else:
+                    rep = self._talk('',only_read=True)
+                    continue
+            if rep[0][0] == "!done":
+                tagstr = rep[0][1].get(".tag")
+                try:
+                    tag = int(tagstr)
+                except:
+                    tag = -1
+                self._debugmsg("send done reqtag:{} reptag:{}".format(req_tag,tag))
+                if tag == req_tag:
+                    return True,[]
+                else:
+                    rep = self._talk('',only_read=True)
+                    continue
+            for line in rep:
+                if line[0] == "!re":
+                    tagstr = line[1].get(".tag")
+                    try:
+                        tag = int(tagstr)
+                    except:
+                        tag = -1
+                    self._debugmsg("send reqtag:{} reptag:{}".format(req_tag,tag))
+                    if tag == req_tag:
+                        self._debugmsg("send req tag found")
+                        tag_resp = True
+                        fullrep.append({ k[1:] if k.startswith('=') else k: v for k, v in line[1].items() })
+                    else :
+                        if line[1].get("=.section"):
+                            ctag = line[1].get(".tag")
+                            if ctag and not ctag in cancel_tag:
+                                self._talk(["/cancel","=tag={}".format(ctag)])
+                                cancel_tag.append(ctag)
+                                continue
+            if not tag_resp:
+                self._debugmsg("send re-talk")
+                rep = self._talk('',only_read=True)
+        self._debugmsg("send result : ",str(fullrep))
         return True,fullrep
     
     @property
