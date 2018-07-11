@@ -144,31 +144,6 @@ class Api:
         return ret
     
     @staticmethod
-    def _prettyprint(array):
-        ret = []
-        for item in array:
-            new_item={}
-            for k, v in item.items():
-                if k == ".id":
-                    k = k[1:]
-                    v = v[1:]
-                new_item[k]=v
-            ret.append(new_item)
-        return ret
-    
-    @staticmethod
-    def _unpretty(d):
-        ret = {}
-        for k, v in d.items():
-            if k == "id":
-                k = ".id"
-            if k == "id" or k == ".id":
-                if not v.startswith("*"):
-                    v = "*"+v
-            ret[k]=v
-        return ret
-
-    @staticmethod
     def _unpretty_id(ids):
         if type(ids) is int:
             ids = str(ids)
@@ -262,7 +237,6 @@ class Api:
         return (bool, [response])
         """
         command = [path + "/print"]
-        search = self._unpretty(search)
         for k, v in search.items():
             if v.startswith("<"):
                 opp = "<"
@@ -284,13 +258,11 @@ class Api:
             command.append("?#|")
         elif operation == "NOT":
             command.append("?#!")
-        if not ".id" in itemlist:
-            itemlist = itemlist.replace("id",".id",1)
         if itemlist != "":
             command.append("=.proplist={}".format(itemlist))
         ret, resp = self.send(command)
         if ret:
-            return ret, self._prettyprint(resp)
+            return ret, resp
         else:
             return ret, resp
                            
@@ -304,7 +276,6 @@ class Api:
         Return bool
         """
         command = [path + "/add"]
-        params = self._unpretty(params)
         for k, v in params.items():
             command.append("={}={}".format(k,v))
         ret, resp = self.send(command)
@@ -321,7 +292,6 @@ class Api:
         Return bool
         """
         command = [path + "/set"]
-        params = self._unpretty(params)
         command.append("=.id={}".format(self._unpretty_id(id)))
         for k, v in params.items():
             command.append("={}={}".format(k,v))
