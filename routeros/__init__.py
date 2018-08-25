@@ -409,3 +409,13 @@ class Api:
         """
         ret, resp = self.send(["/system/script/run","=.id={}".format(script_name)])
         return ret
+    
+    def wol(self, interface, mac):
+        """
+        wakeonline (mikrotik's /tool/wol)
+        
+        interface : interface's name
+        mac : computer's mac address
+        """
+        ret, resp = self.send(["/tool/wol","=interface={}".format(interface), "=mac={}".format(mac)])
+        return ret
