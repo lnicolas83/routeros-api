@@ -49,7 +49,7 @@ True
      |      find (mikrotik's print)
      |      
      |      path      : api path (eg: /ip/address)
-     |      search    : 
+     |      search    :  (value is str or list)
      |                   "key" : "value"  -> key = value
      |                   "key" : "@"      -> key exist
      |                   "key" : "!"      -> key not exist
@@ -102,6 +102,11 @@ True
      |              
      |      Return bool
      |  
+     |  run(self, script_name)
+     |      run a script (mikrotik's /system/script/run)
+     |      
+     |      script_name: name of script
+     |  
      |  send(self, words)
      |      Send raw api command
      |      
@@ -117,6 +122,12 @@ True
      |      params    : set parameters (eg: {'address': '192.168.0.1','interface':'ether4'})
      |      
      |      Return bool
+     |  
+     |  wol(self, interface, mac)
+     |      wakeonline (mikrotik's /tool/wol)
+     |      
+     |      interface : interface's name
+     |      mac : computer's mac address
      |  
      |  ----------------------------------------------------------------------
      |  Data descriptors defined here:
