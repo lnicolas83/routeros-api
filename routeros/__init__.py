@@ -329,7 +329,7 @@ class Api:
         set (mikrotik's set)
         
         path      : api path (eg: /ip/address)
-        id        : mikrotik item(s) id(s) (eg : "1" or "*1" or "1,a" or "*1,a" or ["1","2"] or ["*1","2"]
+        id        : mikrotik item(s) id(s) (eg : "*1,*a" or ["*1","*a"])
         params    : set parameters (eg: {'address': '192.168.0.1','interface':'ether4'})
         
         Return bool
@@ -346,7 +346,7 @@ class Api:
         remove (mikrotik's remove)
         
         path      : api path (eg: /ip/address)
-        id        : mikrotik item(s) id(s) (eg : "1" or "*1" or "1,a" or "*1,a" or ["1","2"] or ["*1","2"]
+        id        : mikrotik item(s) id(s) (eg : "*1,*a" or ["*1","*a"])
                 
         Return bool
         """
