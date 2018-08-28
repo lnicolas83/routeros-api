@@ -148,18 +148,9 @@ class Api:
     
     @staticmethod
     def _unpretty_id(ids):
-        if type(ids) is int:
-            ids = str(ids)
-        if type(ids) is str:
-            ids = ids.split(",")
-        ret=[]
-        for id in ids:
-            if type(id) is int:
-                id = str(id)
-            if not id.startswith("*"):
-                id = "*"+id
-            ret.append(id)
-        return ",".join(ret)
+        if type(ids) is list:
+            ids = ",".join(ids)
+        return ids
         
 
     def login(self, username, pwd):
@@ -381,10 +372,10 @@ class Api:
         
         Return bool
         """
-        ret1, resp1 = self.find(path, search, "id", operation)
+        ret1, resp1 = self.find(path, search, ".id", operation)
         if not ret1 or len(resp1) == 0:
             return False
-        return self.set(path, [i["id"] for i in resp1], params)
+        return self.set(path, [i[".id"] for i in resp1], params)
     
     def find_and_remove(self, path, search={}, operation="AND"):
         """
@@ -401,10 +392,10 @@ class Api:
         
         Return bool
         """
-        ret1, resp1 = self.find(path, search, "id", operation)
+        ret1, resp1 = self.find(path, search, ".id", operation)
         if not ret1 or len(resp1) == 0:
             return False
-        return self.remove(path, [i["id"] for i in resp1])
+        return self.remove(path, [i[".id"] for i in resp1])
     
     def run(self, script_name):
         """
