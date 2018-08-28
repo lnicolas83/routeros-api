@@ -272,7 +272,7 @@ class Api:
         find (mikrotik's print)
         
         path      : api path (eg: /ip/address)
-        search    : 
+        search    :  (value is str or list)
                      "key" : "value"  -> key = value
                      "key" : "@"      -> key exist
                      "key" : "!"      -> key not exist
