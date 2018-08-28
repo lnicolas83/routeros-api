@@ -284,21 +284,26 @@ class Api:
         return (bool, [response])
         """
         command = [path + "/print"]
-        for k, v in search.items():
-            if v.startswith("<"):
-                opp = "<"
-                v = v[1:]
-            elif v.startswith(">"):
-                opp = ">"
-                v = v[1:]
-            else:
-                opp = "="
-            if v == "@":
-                command.append("?{}".format(k))
-            elif v == "!":
-                command.append("?-{}".format(k))
-            else:
-                command.append("?{}{}={}".format(opp,k,v))
+        for k, vs in search.items():
+            if not type(vs) is list:
+                vs = [str(vs)]
+            if k == ".id" and len(vs) > 1:
+               operation = "OR" 
+            for v in vs:
+                if v.startswith("<"):
+                    opp = "<"
+                    v = v[1:]
+                elif v.startswith(">"):
+                    opp = ">"
+                    v = v[1:]
+                else:
+                    opp = "="
+                if v == "@":
+                    command.append("?{}".format(k))
+                elif v == "!":
+                    command.append("?-{}".format(k))
+                else:
+                    command.append("?{}{}={}".format(opp,k,v))
         if operation == "AND":
             command.append("?#&")
         elif operation == "OR":
