@@ -26,6 +26,10 @@ True
 
 >>> api.find_and_remove("/ip/address",{"interface":"ether2"})
 True
+
+>>> api.find_and_remove("/ip/address",{"interface": ["ether2","ether3"]})
+True
+
 ```
     class Api
      |  Routeros api
